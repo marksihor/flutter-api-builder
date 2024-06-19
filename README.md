@@ -34,7 +34,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await FormInjector().initialize(
     serviceLocator: sl,
-    apiUrl: 'https://picks2.payments.dev.zenzenzen.net',
+    apiUrl: 'https://yourapi.net',
   );
 
   runApp(const MyApp());
@@ -79,7 +79,7 @@ class ExampleFormPage extends StatelessWidget {
         form: Form_(
           endpoint: Endpoint(
             method: FormSubmitMethod.post,
-            path: 'api/public/auth/login',
+            path: 'api/yourpath',
           ),
           getFieldErrors: (form, field) {
             // Each api can return validation errors differently, so you need to
@@ -99,6 +99,7 @@ class ExampleFormPage extends StatelessWidget {
             // handle submit success, do redirect, show modal, etc...
           },
           fields: loadSubfieldOptionsBasedOnParentFieldValueExample(),
+          // fields: loadSubfieldsBasedOnParentFieldValueExample(),
           submitButton: ElevatedButton(
             onPressed: () {},
             child: const Text('Submit'),
@@ -149,6 +150,46 @@ class ExampleFormPage extends StatelessWidget {
             },
           ),
         ],
+      ),
+    ];
+  }
+
+  List<Field> loadSubfieldsBasedOnParentFieldValueExample() {
+    return [
+      Field(
+        label: 'Make',
+        hint: 'Select Make',
+        path: 'make_id',
+        builder: (f) => SelectField(field: f),
+        options: [
+          Option(label: 'BMW', value: 1),
+          Option(label: 'Audi', value: 2),
+        ],
+        getSubfields: (parentField) async {
+          List<Option> subtypeOptions = [];
+
+          if (parentField.value?.value == 1) {
+            subtypeOptions = [
+              Option(label: '3 series', value: '3series'),
+              Option(label: '5 series', value: '5series'),
+            ];
+          } else if (parentField.value?.value == 2) {
+            subtypeOptions = [
+              Option(label: 'A4', value: 'a4'),
+              Option(label: 'A6', value: 'a6'),
+            ];
+          }
+
+          return [
+            Field(
+              label: 'Model (depends on Make, can be loaded from api)',
+              hint: 'Select Model',
+              path: 'model_id',
+              builder: (f) => SelectField(field: f),
+              options: subtypeOptions,
+            ),
+          ];
+        },
       ),
     ];
   }
