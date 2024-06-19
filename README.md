@@ -20,8 +20,38 @@ TODO: List what your package can do. Maybe include images, gifs, or videos.
 
 ## Getting started
 
-TODO: List prerequisites and provide or point to information on how to
-start using the package.
+Minimum set up:
+
+```dart
+import 'package:flutter/material.dart';
+
+import 'example_form_page.dart';
+import 'package:get_it/get_it.dart';
+
+final sl = GetIt.instance;
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await FormInjector().initialize(
+    serviceLocator: sl,
+    apiUrl: 'https://picks2.payments.dev.zenzenzen.net',
+  );
+
+  runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const MaterialApp(
+      home: ExampleFormPage(),
+      debugShowCheckedModeBanner: false,
+    );
+  }
+}
+```
 
 ## Usage
 
