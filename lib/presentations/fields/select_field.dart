@@ -26,22 +26,27 @@ class _SelectFieldState extends State<SelectField> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<FormBloc, FormState_>(
-      builder: (context, state) {
-        return DropdownButton<Option>(
-          value: widget.field.options.contains(dropdownValue)
-              ? dropdownValue
-              : null,
-          onChanged: (value) {
-            setState(() {
-              dropdownValue = value;
-            });
+    return SizedBox(
+      width: double.infinity,
+      child: BlocBuilder<FormBloc, FormState_>(
+        builder: (context, state) {
+          return DropdownButton<Option>(
+            value: widget.field.options.contains(dropdownValue)
+                ? dropdownValue
+                : null,
+            hint: widget.field.hint == null ? null : Text(widget.field.hint!),
+            onChanged: (value) {
+              setState(() {
+                dropdownValue = value;
+              });
 
-            widget.setFieldValue(context, value);
-          },
-          items: getOptions(state),
-        );
-      },
+              widget.setFieldValue(context, value);
+            },
+            items: getOptions(state),
+            isExpanded: true,
+          );
+        },
+      ),
     );
   }
 
