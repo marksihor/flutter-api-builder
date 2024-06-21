@@ -52,9 +52,10 @@ class FormHttpClient {
     } on DioException catch (e) {
       log('on DioException catch (e)');
       log(e.message.toString());
+      var data = e.response?.data;
       throw FormHttpClientError(
         code: e.response?.statusCode ?? 500,
-        data: e.response?.data ?? {},
+        data: data is String ? {'response': data} : data ?? {},
       );
     }
   }
