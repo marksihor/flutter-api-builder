@@ -3,6 +3,7 @@ import 'package:api_builder/injection.dart';
 import 'package:api_builder/models/field.dart';
 import 'package:api_builder/models/form.dart';
 import 'package:api_builder/presentations/components/loading_overlay.dart';
+import 'package:api_builder/presentations/styles/form_style.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -20,12 +21,14 @@ class FromBuilder extends StatelessWidget {
           _handleLoadingOverlay(state, context);
         },
         builder: (BuildContext context, FormState_ state) {
-          return Column(
-            children: _applyElementsStyles([
-              ..._getFieldsWidgets(context, state),
-              if (state.form.submitButton != null)
-                _getSubmitButton(context, state),
-            ]),
+          return SingleChildScrollView(
+            child: Column(
+              children: _applyElementsStyles([
+                ..._getFieldsWidgets(context, state),
+                if (state.form.submitButton != null)
+                  _getSubmitButton(context, state),
+              ]),
+            ),
           );
         },
       ),
@@ -34,7 +37,11 @@ class FromBuilder extends StatelessWidget {
 
   List<Widget> _applyElementsStyles(List<Widget> elements) {
     return elements
-        .map((e) => Container(padding: form.style?.elementsPadding, child: e))
+        .map((e) => Container(
+              padding: form.style?.elementsPadding ??
+                  FormInjector().serviceLocator<FormStyle>().elementsPadding,
+              child: e,
+            ))
         .toList();
   }
 
@@ -45,14 +52,19 @@ class FromBuilder extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (field.label != null)
-            Text(field.label!, textAlign: TextAlign.start),
+            Text(
+              field.label!,
+              textAlign: TextAlign.start,
+              style: Theme.of(context).inputDecorationTheme.labelStyle,
+            ),
           field.widget,
           if (field.errors.isNotEmpty)
             Column(
               children: field.errors
                   .map((error) => Text(
                         error,
-                        style: const TextStyle(color: Colors.red),
+                        style:
+                            Theme.of(context).inputDecorationTheme.errorStyle,
                       ))
                   .toList(),
             ),

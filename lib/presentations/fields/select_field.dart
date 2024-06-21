@@ -30,11 +30,16 @@ class _SelectFieldState extends State<SelectField> {
       width: double.infinity,
       child: BlocBuilder<FormBloc, FormState_>(
         builder: (context, state) {
-          return DropdownButton<Option>(
+          return DropdownButtonFormField<Option>(
             value: widget.field.options.contains(dropdownValue)
                 ? dropdownValue
                 : null,
-            hint: widget.field.hint == null ? null : Text(widget.field.hint!),
+            hint: widget.field.hint == null
+                ? null
+                : Text(
+                    widget.field.hint!,
+                    style: Theme.of(context).inputDecorationTheme.hintStyle,
+                  ),
             onChanged: (value) {
               setState(() {
                 dropdownValue = value;

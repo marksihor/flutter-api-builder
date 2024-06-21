@@ -33,7 +33,7 @@ class FormHttpClient {
     );
   }
 
-  Future<Response<dynamic>?> get(String path, Object? data) async {
+  Future<Response<dynamic>?> get(String path, {Object? data}) async {
     Map<String, dynamic> query = {};
     if (data is Map) {
       data.forEach((key, value) {

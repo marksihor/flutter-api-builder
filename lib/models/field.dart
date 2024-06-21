@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:api_builder/models/option.dart';
+import 'package:api_builder/models/rule.dart';
 import 'package:api_builder/presentations/conditions/condition.dart';
 import 'package:flutter/material.dart';
 
@@ -18,6 +19,7 @@ class Field {
   List<Condition> visibilityConditions;
   bool visible = true;
   List<String> errors = [];
+  List<Rule>? rules;
 
   Field({
     this.value,
@@ -30,6 +32,7 @@ class Field {
     this.getSubfields,
     this.getOptions,
     this.visibilityConditions = const [],
+    this.rules,
   })  : _widgetCreator = builder,
         _options = options,
         _subfields = subfields;

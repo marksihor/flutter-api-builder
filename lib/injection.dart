@@ -1,4 +1,6 @@
+import 'package:api_builder/handlers/api_validation_handler.dart';
 import 'package:api_builder/presentations/components/loading_overlay.dart';
+import 'package:api_builder/presentations/styles/form_style.dart';
 import 'package:get_it/get_it.dart';
 
 import 'data/form_http_client.dart';
@@ -21,14 +23,20 @@ class FormInjector {
   }
 
   // Initialization method
-  Future<void> initialize(
-      {required GetIt serviceLocator, required String apiUrl}) async {
+  Future<void> initialize({
+    required GetIt serviceLocator,
+    required String apiUrl,
+    required ApiValidationHandler apiValidationHandler,
+    FormStyle? formStyle,
+  }) async {
     if (_isInitialized) return;
     _serviceLocator = serviceLocator;
     _apiUrl = apiUrl;
 
     serviceLocator.registerLazySingleton(() => LoadingOverlay());
     serviceLocator.registerLazySingleton(() => FormHttpClient(apiUrl: apiUrl));
+    serviceLocator.registerLazySingleton(() => apiValidationHandler);
+    serviceLocator.registerLazySingleton(() => formStyle ?? FormStyle());
 
     _isInitialized = true;
   }

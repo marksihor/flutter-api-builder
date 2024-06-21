@@ -1,3 +1,4 @@
+import 'package:api_builder/handlers/local_validation_handler.dart';
 import 'package:api_builder/models/field.dart';
 import 'package:api_builder/models/form.dart';
 import 'package:api_builder/usecases/form_submit_usecase.dart';
@@ -31,30 +32,36 @@ class FormBloc extends Bloc<FormEvent, FormState_> {
       ),
     );
 
-    var res = await FormSubmitUsecase.execute(event.form);
-    res.fold(
-      (error) => emitter(switch (error.code) {
-        422 => FormValidationErrorState(
-            form: event.form
-              ..error = error
-              ..setFieldsValidationErrors()),
-        _ => FormSubmittingErrorState(
-            form: event.form
-              ..error = error
-              ..onSubmitError(event.form),
-          )
-      }),
-      (response) {
-        event.form.setResponseData(response?.data);
-        // log(event.form.responseData.toString());
+    var valid = _preValidate(event.form);
+    if (valid) {
+      var res = await FormSubmitUsecase.execute(event.form);
+      res.fold(
+        (error) => emitter(switch (error.code) {
+          422 => FormValidationErrorState(
+              form: event.form
+                ..error = error
+                ..setFieldsValidationErrors(),
+            ),
+          _ => FormSubmittingErrorState(
+              form: event.form
+                ..error = error
+                ..onSubmitError(event.form),
+            )
+        }),
+        (response) {
+          event.form.setResponseData(response?.data);
+          // log(event.form.responseData.toString());
 
-        if (event.form.onSubmitSuccess != null) {
-          event.form.onSubmitSuccess!(event.form);
-        }
+          if (event.form.onSubmitSuccess != null) {
+            event.form.onSubmitSuccess!(event.form);
+          }
 
-        emitter(FormSubmittedState(form: event.form));
-      },
-    );
+          emitter(FormSubmittedState(form: event.form));
+        },
+      );
+    } else {
+      emitter(FormValidationErrorState(form: event.form));
+    }
   }
 
   _onFieldValueChangedEvent(
@@ -87,5 +94,18 @@ class FormBloc extends Bloc<FormEvent, FormState_> {
     emitter(
       FormFieldOptionsFetchedState(form: event.form, field: event.field),
     );
+  }
+
+  bool _preValidate(Form_ form) {
+    bool hasErrors = false;
+
+    for (var field in form.fields) {
+      LocalValidationHandler(field: field).validate();
+      if (field.errors.isNotEmpty) {
+        hasErrors = true;
+      }
+    }
+
+    return !hasErrors;
   }
 }

@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:api_builder/exceptions/form_http_client_error.dart';
+import 'package:api_builder/handlers/api_validation_handler.dart';
+import 'package:api_builder/injection.dart';
 import 'package:api_builder/models/endpoint.dart';
 import 'package:api_builder/models/field.dart';
 import 'package:api_builder/presentations/styles/form_style.dart';
@@ -13,7 +15,7 @@ class Form_ {
 
   Widget? submitButton;
   FormStyle? style;
-  final List<String> Function(Form_ form, Field field) getFieldErrors;
+  final List<String> Function(Form_ form, Field field)? getFieldErrors;
   final void Function(Form_ form) onSubmitError;
   final void Function(Form_ form)? onSubmitSuccess;
   FormHttpClientError? error;
@@ -25,7 +27,7 @@ class Form_ {
     List<Field>? fields,
     this.submitButton,
     this.style,
-    required this.getFieldErrors,
+    this.getFieldErrors,
     required this.onSubmitError,
     this.onSubmitSuccess,
     Map<String, dynamic>? extraSubmitData,
@@ -57,14 +59,31 @@ class Form_ {
   }
 
   void setFieldsValidationErrors() {
+    ApiValidationHandler apiValidationHandler =
+        FormInjector().serviceLocator<ApiValidationHandler>();
+
+    void handle(field) {
+      if (getFieldErrors != null) {
+        field.errors = getFieldErrors!(this, field);
+      } else {
+        field.errors = apiValidationHandler.getFieldErrors(this, field);
+      }
+    }
+
     for (var field in _fields) {
-      field.errors = getFieldErrors(this, field);
+      handle(field);
+      for (var subfield in field.subfields) {
+        handle(subfield);
+      }
     }
   }
 
   void clearFieldsValidationErrors() {
-    for (var f in _fields) {
-      f.errors = [];
+    for (var field in _fields) {
+      field.errors = [];
+      for (var subfield in field.subfields) {
+        subfield.errors = [];
+      }
     }
   }
 

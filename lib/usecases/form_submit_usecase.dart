@@ -21,7 +21,7 @@ class FormSubmitUsecase {
         ),
       FormSubmitMethod.get => formHttpClient.get(
           form.endpoint.path,
-          form.getSubmitData(),
+          data: form.getSubmitData(),
         ),
     };
 

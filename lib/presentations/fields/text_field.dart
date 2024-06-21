@@ -6,8 +6,9 @@ import 'field_mixin.dart';
 class TextField_ extends StatelessWidget with FieldMixin {
   @override
   final Field field;
+  final TextInputType? keyboardType;
 
-  const TextField_({super.key, required this.field});
+  const TextField_({super.key, required this.field, this.keyboardType});
 
   @override
   Widget build(BuildContext context) {
@@ -17,6 +18,7 @@ class TextField_ extends StatelessWidget with FieldMixin {
       onChanged: (value) {
         setFieldValue(context, value);
       },
+      keyboardType: keyboardType,
     );
   }
 }
