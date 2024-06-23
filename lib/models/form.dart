@@ -1,6 +1,3 @@
-import 'dart:convert';
-import 'dart:developer';
-
 import 'package:api_builder/exceptions/form_http_client_error.dart';
 import 'package:api_builder/handlers/api_validation_handler.dart';
 import 'package:api_builder/injection.dart';
@@ -16,7 +13,7 @@ class Form_ {
   Widget? submitButton;
   FormStyle? style;
   final List<String> Function(Form_ form, Field field)? getFieldErrors;
-  final void Function(Form_ form) onSubmitError;
+  final void Function(Form_ form)? onSubmitError;
   final void Function(Form_ form)? onSubmitSuccess;
   FormHttpClientError? error;
   Map? _responseData;
@@ -28,7 +25,7 @@ class Form_ {
     this.submitButton,
     this.style,
     this.getFieldErrors,
-    required this.onSubmitError,
+    this.onSubmitError,
     this.onSubmitSuccess,
     Map<String, dynamic>? extraSubmitData,
   })  : _fields = fields ?? [],
@@ -37,9 +34,9 @@ class Form_ {
   Map<String, dynamic> getSubmitData() {
     Map<String, dynamic> res = {};
 
-    void setSubmitData(field) {
-      if (field.path != null) res[field.path!] = field.value;
-      if (field.subfields.isNotEmpty) {
+    void setSubmitData(Field field) {
+      if (field.path != null && field.visible) res[field.path!] = field.value;
+      if (field.subfields.isNotEmpty && field.visible) {
         for (var subfield in field.subfields) {
           setSubmitData(subfield);
         }
@@ -52,15 +49,12 @@ class Form_ {
 
     if (extraSubmitData.isNotEmpty) res.addAll(extraSubmitData);
 
-    log("Submit data:");
-    log(json.encode(res));
-
     return res;
   }
 
   void setFieldsValidationErrors() {
     ApiValidationHandler apiValidationHandler =
-        FormInjector().serviceLocator<ApiValidationHandler>();
+        FormInjector.serviceLocator<ApiValidationHandler>();
 
     void handle(field) {
       if (getFieldErrors != null) {
@@ -87,23 +81,30 @@ class Form_ {
     }
   }
 
-  List<Field> get fields {
-    List<Field> fields = [];
+  List<Field> get fields => _fields;
 
-    for (var field in _fields) {
+  void setFieldsVisibility() {
+    void setFieldVisibility(Field field) {
       field.visible = true;
-
-      for (var condition in field.visibilityConditions) {
-        if (!condition.check(fields)) {
-          field.visible = false;
-          break;
+      if (field.visibilityConditions.isNotEmpty) {
+        for (var condition in field.visibilityConditions) {
+          if (!condition.check(this)) {
+            field.visible = false;
+            break;
+          }
         }
       }
 
-      if (field.visible) fields.add(field);
+      if (field.visible) {
+        for (var subfield in field.subfields) {
+          setFieldVisibility(subfield);
+        }
+      }
     }
 
-    return fields;
+    for (var field in _fields) {
+      setFieldVisibility(field);
+    }
   }
 
   Map get responseData => _responseData ?? {};

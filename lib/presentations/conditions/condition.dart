@@ -1,9 +1,9 @@
-import 'package:api_builder/models/field.dart';
+import 'package:api_builder/models/form.dart';
 
 abstract class Condition {
   String path;
 
   Condition({required this.path});
 
-  bool check(List<Field> fields);
+  bool check(Form_ form);
 }

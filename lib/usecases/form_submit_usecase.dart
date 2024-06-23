@@ -9,7 +9,7 @@ import 'package:api_builder/models/form.dart';
 class FormSubmitUsecase {
   static Future<Either<FormHttpClientError, Response<dynamic>?>> execute(
       Form_ form) async {
-    final formHttpClient = FormInjector().serviceLocator<FormHttpClient>();
+    final formHttpClient = FormInjector.serviceLocator<FormHttpClient>();
     var request = switch (form.endpoint.method) {
       FormSubmitMethod.post => formHttpClient.post(
           form.endpoint.path,

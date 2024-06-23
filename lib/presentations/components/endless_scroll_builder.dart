@@ -1,4 +1,5 @@
 import 'package:api_builder/bloc/form_bloc.dart';
+import 'package:api_builder/handlers/api_pagination_handler.dart';
 import 'package:api_builder/injection.dart';
 import 'package:api_builder/models/form.dart';
 import 'package:api_builder/presentations/components/loading_overlay.dart';
@@ -7,17 +8,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 class EndlessScrollBuilder extends StatefulWidget {
   final Form_ form;
-
-  final int Function(Form_ form) getCurrentPage;
-  final int? Function(Form_ form) getNextPage;
   final String queryKey;
   final String itemsKey;
+  final Widget Function(Map data) elementBuilder;
 
   const EndlessScrollBuilder({
     super.key,
     required this.form,
-    required this.getCurrentPage,
-    required this.getNextPage,
+    required this.elementBuilder,
     this.queryKey = 'page',
     this.itemsKey = 'data',
   });
@@ -54,8 +52,11 @@ class _EndlessScrollBuilderState extends State<EndlessScrollBuilder> {
               final currentScroll = _scrollController.position.pixels;
 
               if (currentScroll == maxScroll) {
-                int currentPage = widget.getCurrentPage(state.form);
-                int? nextPage = widget.getNextPage(state.form);
+                // int currentPage = widget.getCurrentPage(state.form);
+                var handler =
+                    FormInjector.serviceLocator<ApiPaginationHandler>();
+                int currentPage = handler.getCurrentPage(state.form);
+                int? nextPage = handler.getNextPage(state.form);
                 if (nextPage != null && nextPage > currentPage) {
                   state.form.extraSubmitData[widget.queryKey] = nextPage;
                   _submit(context, state);
@@ -82,7 +83,7 @@ class _EndlessScrollBuilderState extends State<EndlessScrollBuilder> {
               controller: _scrollController,
               physics: const AlwaysScrollableScrollPhysics(),
               shrinkWrap: true,
-              children: elements.map((e) => Text(e.toString())).toList(),
+              children: elements.map((e) => widget.elementBuilder(e)).toList(),
             ),
           );
         },
@@ -95,7 +96,7 @@ class _EndlessScrollBuilderState extends State<EndlessScrollBuilder> {
   }
 
   void _handleLoadingOverlay(FormState_ state, BuildContext context) {
-    final loadingOverlay = FormInjector().serviceLocator<LoadingOverlay>();
+    final loadingOverlay = FormInjector.serviceLocator<LoadingOverlay>();
     if (state is FormSubmittingState) {
       loadingOverlay.show(context);
     } else {

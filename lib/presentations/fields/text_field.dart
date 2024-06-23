@@ -7,18 +7,29 @@ class TextField_ extends StatelessWidget with FieldMixin {
   @override
   final Field field;
   final TextInputType? keyboardType;
+  final int? maxLines;
+  final int? minLines;
 
-  const TextField_({super.key, required this.field, this.keyboardType});
+  const TextField_({
+    super.key,
+    required this.field,
+    this.keyboardType,
+    this.maxLines,
+    this.minLines,
+  });
 
   @override
   Widget build(BuildContext context) {
     return TextFormField(
-      initialValue: field.value,
+      controller: TextEditingController()..text = field.value ?? '',
+      // initialValue: field.value,
       decoration: InputDecoration(hintText: field.hint),
       onChanged: (value) {
         setFieldValue(context, value);
       },
       keyboardType: keyboardType,
+      maxLines: maxLines,
+      minLines: minLines,
     );
   }
 }

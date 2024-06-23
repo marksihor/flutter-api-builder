@@ -1,4 +1,5 @@
 import 'package:api_builder/models/field.dart';
+import 'package:api_builder/models/form.dart';
 import 'package:api_builder/presentations/conditions/condition.dart';
 
 class ValueEqualCondition implements Condition {
@@ -9,8 +10,8 @@ class ValueEqualCondition implements Condition {
   ValueEqualCondition({required this.path, required this.value});
 
   @override
-  bool check(List<Field> fields) {
-    Field field = fields.firstWhere((f) => f.path == path);
+  bool check(Form_ form) {
+    Field field = form.fields.firstWhere((f) => f.path == path);
 
     return field.value == value;
   }

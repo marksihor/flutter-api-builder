@@ -1,4 +1,9 @@
+import 'dart:convert';
+import 'dart:developer';
+
+import 'package:api_builder/handlers/api_error_handler.dart';
 import 'package:api_builder/handlers/local_validation_handler.dart';
+import 'package:api_builder/injection.dart';
 import 'package:api_builder/models/field.dart';
 import 'package:api_builder/models/form.dart';
 import 'package:api_builder/usecases/form_submit_usecase.dart';
@@ -12,7 +17,8 @@ part 'form_state.dart';
 class FormBloc extends Bloc<FormEvent, FormState_> {
   Form_ form;
 
-  FormBloc({required this.form}) : super(FormInitial(form: form)) {
+  FormBloc({required this.form})
+      : super(FormInitial(form: form..setFieldsVisibility())) {
     on<FormSubmitEvent>(_onSubmitEvent);
     on<FormFieldValueChangedEvent>(_onFieldValueChangedEvent);
     on<FormFieldLoadSubfieldsEvent>(_onFormFieldLoadSubfieldsEvent);
@@ -23,6 +29,8 @@ class FormBloc extends Bloc<FormEvent, FormState_> {
     FormSubmitEvent event,
     Emitter<FormState_> emitter,
   ) async {
+    log("Submit data:");
+    log(json.encode(event.form.getSubmitData()));
     emitter(
       FormSubmittingState(
         form: event.form
@@ -36,21 +44,25 @@ class FormBloc extends Bloc<FormEvent, FormState_> {
     if (valid) {
       var res = await FormSubmitUsecase.execute(event.form);
       res.fold(
-        (error) => emitter(switch (error.code) {
-          422 => FormValidationErrorState(
+        (error) {
+          if (error.code == 422) {
+            emitter(FormValidationErrorState(
               form: event.form
                 ..error = error
                 ..setFieldsValidationErrors(),
-            ),
-          _ => FormSubmittingErrorState(
-              form: event.form
-                ..error = error
-                ..onSubmitError(event.form),
-            )
-        }),
+            ));
+          } else {
+            event.form.error = error;
+            if (event.form.onSubmitError == null) {
+              FormInjector.serviceLocator<ApiErrorHandler>().handle(event.form);
+            } else {
+              event.form.onSubmitError!(event.form);
+            }
+            emitter(FormSubmittingErrorState(form: event.form));
+          }
+        },
         (response) {
           event.form.setResponseData(response?.data);
-          // log(event.form.responseData.toString());
 
           if (event.form.onSubmitSuccess != null) {
             event.form.onSubmitSuccess!(event.form);
@@ -68,8 +80,10 @@ class FormBloc extends Bloc<FormEvent, FormState_> {
     FormFieldValueChangedEvent event,
     Emitter<FormState_> emitter,
   ) async {
-    emitter(FormFieldValueChangedState(form: event.form, field: event.field));
-    // emitter(FormRebuiltState(form: event.form));
+    emitter(FormFieldValueChangedState(
+      form: event.form..setFieldsVisibility(),
+      field: event.field..clearErrors(),
+    ));
   }
 
   _onFormFieldLoadSubfieldsEvent(
@@ -88,6 +102,7 @@ class FormBloc extends Bloc<FormEvent, FormState_> {
     FormFieldLoadOptionsEvent event,
     Emitter<FormState_> emitter,
   ) async {
+    event.field.value = null;
     var options = await event.field.getOptions!(event.parentField);
     event.field.setOptions(options);
 
@@ -99,11 +114,21 @@ class FormBloc extends Bloc<FormEvent, FormState_> {
   bool _preValidate(Form_ form) {
     bool hasErrors = false;
 
-    for (var field in form.fields) {
-      LocalValidationHandler(field: field).validate();
-      if (field.errors.isNotEmpty) {
-        hasErrors = true;
+    void validateField(Field field) {
+      if (field.visible) {
+        LocalValidationHandler(field: field).validate();
+        if (field.errors.isNotEmpty) {
+          hasErrors = true;
+        }
+
+        for (var subfield in field.subfields) {
+          validateField(subfield);
+        }
       }
+    }
+
+    for (var field in form.fields) {
+      validateField(field);
     }
 
     return !hasErrors;

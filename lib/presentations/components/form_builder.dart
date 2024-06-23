@@ -39,7 +39,7 @@ class FromBuilder extends StatelessWidget {
     return elements
         .map((e) => Container(
               padding: form.style?.elementsPadding ??
-                  FormInjector().serviceLocator<FormStyle>().elementsPadding,
+                  FormInjector.serviceLocator<FormStyle>().elementsPadding,
               child: e,
             ))
         .toList();
@@ -89,7 +89,16 @@ class FromBuilder extends StatelessWidget {
     }
 
     List<Field> fields = [];
-    for (var field in state.form.fields) {
+
+    void getSubfields(Field field) {
+      for (var subfield in field.subfields.where((e) => e.visible)) {
+        fields.add(subfield);
+        getOptions(subfield, field);
+        getSubfields(subfield);
+      }
+    }
+
+    for (var field in state.form.fields.where((e) => e.visible)) {
       fields.add(field);
       getOptions(field, null);
       if (field.getSubfields != null) {
@@ -106,15 +115,17 @@ class FromBuilder extends StatelessWidget {
           }
         }
 
-        for (var subfield in field.subfields) {
-          fields.add(subfield);
-          getOptions(subfield, field);
-        }
+        getSubfields(field);
+        // for (var subfield in field.subfields.where((e) => e.visible)) {
+        //   fields.add(subfield);
+        //   getOptions(subfield, field);
+        // }
       } else if (field.subfields.isNotEmpty) {
-        for (var subfield in field.subfields) {
-          fields.add(subfield);
-          getOptions(subfield, field);
-        }
+        getSubfields(field);
+        // for (var subfield in field.subfields.where((e) => e.visible)) {
+        //   fields.add(subfield);
+        //   getOptions(subfield, field);
+        // }
       }
     }
 
@@ -139,7 +150,7 @@ class FromBuilder extends StatelessWidget {
   }
 
   void _handleLoadingOverlay(FormState_ state, BuildContext context) {
-    final loadingOverlay = FormInjector().serviceLocator<LoadingOverlay>();
+    final loadingOverlay = FormInjector.serviceLocator<LoadingOverlay>();
     if (state is FormSubmittingState) {
       loadingOverlay.show(context);
     } else {

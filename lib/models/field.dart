@@ -49,4 +49,8 @@ class Field {
   void setSubfields(List<Field> subfields) => _subfields = subfields;
 
   void setOptions(List<Option> options) => _options = options;
+
+  void clearErrors() {
+    errors = [];
+  }
 }
