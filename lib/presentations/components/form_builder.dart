@@ -2,12 +2,12 @@ import 'package:api_builder/bloc/form_bloc.dart';
 import 'package:api_builder/injection.dart';
 import 'package:api_builder/models/field.dart';
 import 'package:api_builder/models/form.dart';
-import 'package:api_builder/presentations/components/loading_overlay.dart';
+import 'package:api_builder/presentations/components/form_helper_mixin.dart';
 import 'package:api_builder/presentations/styles/form_style.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class FromBuilder extends StatelessWidget {
+class FromBuilder extends StatelessWidget with FormHelperMixin {
   final Form_ form;
 
   const FromBuilder({super.key, required this.form});
@@ -18,7 +18,7 @@ class FromBuilder extends StatelessWidget {
       create: (_) => FormBloc(form: form),
       child: BlocConsumer<FormBloc, FormState_>(
         listener: (BuildContext context, FormState_ state) {
-          _handleLoadingOverlay(state, context);
+          loadingOverlayHandler(state, context);
         },
         builder: (BuildContext context, FormState_ state) {
           return SingleChildScrollView(
@@ -116,16 +116,8 @@ class FromBuilder extends StatelessWidget {
         }
 
         getSubfields(field);
-        // for (var subfield in field.subfields.where((e) => e.visible)) {
-        //   fields.add(subfield);
-        //   getOptions(subfield, field);
-        // }
       } else if (field.subfields.isNotEmpty) {
         getSubfields(field);
-        // for (var subfield in field.subfields.where((e) => e.visible)) {
-        //   fields.add(subfield);
-        //   getOptions(subfield, field);
-        // }
       }
     }
 
@@ -134,7 +126,10 @@ class FromBuilder extends StatelessWidget {
 
   Widget _getSubmitButton(BuildContext context, FormState_ state) {
     return GestureDetector(
-      onTap: () => _submit(context, state),
+      onTap: () {
+        FocusManager.instance.primaryFocus?.unfocus();
+        submit(context, state);
+      },
       child: Stack(
         children: [
           state.form.submitButton!,
@@ -142,19 +137,5 @@ class FromBuilder extends StatelessWidget {
         ],
       ),
     );
-  }
-
-  void _submit(BuildContext context, FormState_ state) {
-    FocusManager.instance.primaryFocus?.unfocus();
-    context.read<FormBloc>().add(FormSubmitEvent(form: state.form));
-  }
-
-  void _handleLoadingOverlay(FormState_ state, BuildContext context) {
-    final loadingOverlay = FormInjector.serviceLocator<LoadingOverlay>();
-    if (state is FormSubmittingState) {
-      loadingOverlay.show(context);
-    } else {
-      loadingOverlay.hide();
-    }
   }
 }

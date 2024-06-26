@@ -2,13 +2,13 @@ import 'package:api_builder/bloc/form_bloc.dart';
 import 'package:api_builder/handlers/api_pagination_handler.dart';
 import 'package:api_builder/injection.dart';
 import 'package:api_builder/models/form.dart';
-import 'package:api_builder/presentations/components/loading_overlay.dart';
+import 'package:api_builder/presentations/components/form_helper_mixin.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class EndlessScrollBuilder extends StatefulWidget {
   final Form_ form;
-  final String queryKey;
+  final String pageKey;
   final String itemsKey;
   final Widget Function(Map data) elementBuilder;
 
@@ -16,7 +16,7 @@ class EndlessScrollBuilder extends StatefulWidget {
     super.key,
     required this.form,
     required this.elementBuilder,
-    this.queryKey = 'page',
+    this.pageKey = 'page',
     this.itemsKey = 'data',
   });
 
@@ -24,13 +24,14 @@ class EndlessScrollBuilder extends StatefulWidget {
   State<EndlessScrollBuilder> createState() => _EndlessScrollBuilderState();
 }
 
-class _EndlessScrollBuilderState extends State<EndlessScrollBuilder> {
+class _EndlessScrollBuilderState extends State<EndlessScrollBuilder>
+    with FormHelperMixin {
   final ScrollController _scrollController = ScrollController();
   List elements = [];
 
   @override
   void initState() {
-    widget.form.extraSubmitData[widget.queryKey] = 1;
+    widget.form.extraSubmitData[widget.pageKey] = 1;
     super.initState();
   }
 
@@ -41,9 +42,9 @@ class _EndlessScrollBuilderState extends State<EndlessScrollBuilder> {
       child: BlocConsumer<FormBloc, FormState_>(
         listener: (BuildContext context, FormState_ state) {
           if (state is FormFieldValueChangedEvent) {
-            state.form.extraSubmitData[widget.queryKey] = 1;
+            state.form.extraSubmitData[widget.pageKey] = 1;
           }
-          _handleLoadingOverlay(state, context);
+          loadingOverlayHandler(state, context);
         },
         builder: (BuildContext context, FormState_ state) {
           if (state is FormInitial) {
@@ -52,22 +53,21 @@ class _EndlessScrollBuilderState extends State<EndlessScrollBuilder> {
               final currentScroll = _scrollController.position.pixels;
 
               if (currentScroll == maxScroll) {
-                // int currentPage = widget.getCurrentPage(state.form);
                 var handler =
                     FormInjector.serviceLocator<ApiPaginationHandler>();
                 int currentPage = handler.getCurrentPage(state.form);
                 int? nextPage = handler.getNextPage(state.form);
                 if (nextPage != null && nextPage > currentPage) {
-                  state.form.extraSubmitData[widget.queryKey] = nextPage;
-                  _submit(context, state);
+                  state.form.extraSubmitData[widget.pageKey] = nextPage;
+                  submit(context, state);
                 }
               }
             });
 
-            _submit(context, state);
+            submit(context, state);
           }
           if (state is FormSubmittedState) {
-            if (state.form.extraSubmitData[widget.queryKey] == 1) {
+            if (state.form.extraSubmitData[widget.pageKey] == 1) {
               elements = state.form.responseData[widget.itemsKey];
             } else {
               elements.addAll(state.form.responseData[widget.itemsKey]);
@@ -76,8 +76,8 @@ class _EndlessScrollBuilderState extends State<EndlessScrollBuilder> {
 
           return RefreshIndicator(
             onRefresh: () async {
-              state.form.extraSubmitData[widget.queryKey] = 1;
-              _submit(context, state);
+              state.form.extraSubmitData[widget.pageKey] = 1;
+              submit(context, state);
             },
             child: ListView(
               controller: _scrollController,
@@ -89,19 +89,6 @@ class _EndlessScrollBuilderState extends State<EndlessScrollBuilder> {
         },
       ),
     );
-  }
-
-  void _submit(BuildContext context, FormState_ state) {
-    context.read<FormBloc>().add(FormSubmitEvent(form: state.form));
-  }
-
-  void _handleLoadingOverlay(FormState_ state, BuildContext context) {
-    final loadingOverlay = FormInjector.serviceLocator<LoadingOverlay>();
-    if (state is FormSubmittingState) {
-      loadingOverlay.show(context);
-    } else {
-      loadingOverlay.hide();
-    }
   }
 
   @override
