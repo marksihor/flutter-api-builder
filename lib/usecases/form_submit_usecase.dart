@@ -23,6 +23,10 @@ class FormSubmitUsecase {
           form.endpoint.path,
           data: form.getSubmitData(),
         ),
+      FormSubmitMethod.delete => formHttpClient.delete(
+          form.endpoint.path,
+          data: form.getSubmitData(),
+        ),
     };
 
     try {

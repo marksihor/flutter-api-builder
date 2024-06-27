@@ -6,9 +6,17 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ElementBuilder extends StatelessWidget with FormHelperMixin {
   final Form_ form;
-  final Widget Function(Map data) builder;
+  final bool refreshable;
+  final Widget Function(Map data, Function submit) builder;
+  final Widget Function(Map data, Function submit)? errorBuilder;
 
-  const ElementBuilder({super.key, required this.form, required this.builder});
+  const ElementBuilder({
+    super.key,
+    required this.form,
+    required this.builder,
+    this.errorBuilder,
+    this.refreshable = false,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +31,16 @@ class ElementBuilder extends StatelessWidget with FormHelperMixin {
             submit(context, state);
           }
           if (state is FormSubmittedState) {
-            return builder(state.form.responseData);
+            return builder(
+              state.form.responseData,
+              () => submit(context, state),
+            );
+          } else if (state is FormSubmittingErrorState &&
+              errorBuilder != null) {
+            return errorBuilder!(
+              state.form.responseData,
+              () => submit(context, state),
+            );
           }
 
           return const SizedBox.shrink();

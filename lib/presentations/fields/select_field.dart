@@ -40,13 +40,15 @@ class _SelectFieldState extends State<SelectField> {
                     widget.field.hint!,
                     style: Theme.of(context).inputDecorationTheme.hintStyle,
                   ),
-            onChanged: (value) {
-              setState(() {
-                dropdownValue = value;
-              });
+            onChanged: widget.field.readonly
+                ? null
+                : (value) {
+                    setState(() {
+                      dropdownValue = value;
+                    });
 
-              widget.setFieldValue(context, value);
-            },
+                    widget.setFieldValue(context, value);
+                  },
             items: getOptions(state),
             isExpanded: true,
           );

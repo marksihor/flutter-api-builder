@@ -18,6 +18,7 @@ class Field {
   List<Field>? _subfields;
   List<Condition> visibilityConditions;
   bool visible = true;
+  bool readonly;
   List<String> errors = [];
   List<Rule>? rules;
 
@@ -33,6 +34,7 @@ class Field {
     this.getOptions,
     this.visibilityConditions = const [],
     this.rules,
+    this.readonly = false,
   })  : _widgetCreator = builder,
         _options = options,
         _subfields = subfields;

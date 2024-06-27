@@ -33,6 +33,12 @@ class FormHttpClient {
     );
   }
 
+  Future<Response<dynamic>?> delete(String path, {Object? data}) async {
+    return await _decorate(
+      dio.delete("$apiUrl/$path", data: data),
+    );
+  }
+
   Future<Response<dynamic>?> get(String path, {Object? data}) async {
     Map<String, dynamic> query = {};
     if (data is Map) {

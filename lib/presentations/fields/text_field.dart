@@ -22,14 +22,17 @@ class TextField_ extends StatelessWidget with FieldMixin {
   Widget build(BuildContext context) {
     return TextFormField(
       controller: TextEditingController()..text = field.value ?? '',
-      // initialValue: field.value,
-      decoration: InputDecoration(hintText: field.hint),
+      decoration: InputDecoration(
+        hintText: field.hint,
+        enabled: !field.readonly
+      ),
       onChanged: (value) {
         setFieldValue(context, value);
       },
       keyboardType: keyboardType,
       maxLines: maxLines,
       minLines: minLines,
+      readOnly: field.readonly,
     );
   }
 }
