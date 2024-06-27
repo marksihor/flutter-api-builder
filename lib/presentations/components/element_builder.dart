@@ -6,7 +6,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ElementBuilder extends StatelessWidget with FormHelperMixin {
   final Form_ form;
-  final bool refreshable;
   final Widget Function(Map data, Function submit) builder;
   final Widget Function(Map data, Function submit)? errorBuilder;
 
@@ -15,7 +14,6 @@ class ElementBuilder extends StatelessWidget with FormHelperMixin {
     required this.form,
     required this.builder,
     this.errorBuilder,
-    this.refreshable = false,
   });
 
   @override

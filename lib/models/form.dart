@@ -62,13 +62,14 @@ class Form_ {
       } else {
         field.errors = apiValidationHandler.getFieldErrors(this, field);
       }
+
+      for (var subfield in field.subfields) {
+        handle(subfield);
+      }
     }
 
     for (var field in _fields) {
       handle(field);
-      for (var subfield in field.subfields) {
-        handle(subfield);
-      }
     }
   }
 
