@@ -1,6 +1,6 @@
 import 'package:api_builder/bloc/form_bloc.dart';
-import 'package:api_builder/models/field.dart';
-import 'package:api_builder/models/option.dart';
+import 'package:api_builder/data/models/field.dart';
+import 'package:api_builder/data/models/option.dart';
 import 'package:api_builder/presentations/fields/field_mixin.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

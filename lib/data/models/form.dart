@@ -1,8 +1,8 @@
-import 'package:api_builder/exceptions/form_http_client_error.dart';
-import 'package:api_builder/handlers/api_validation_handler.dart';
-import 'package:api_builder/injection.dart';
-import 'package:api_builder/models/endpoint.dart';
-import 'package:api_builder/models/field.dart';
+import 'package:api_builder/core/exceptions/form_http_client_error.dart';
+import 'package:api_builder/core/handlers/api_validation_handler.dart';
+import 'package:api_builder/core/injection.dart';
+import 'package:api_builder/data/models/endpoint.dart';
+import 'package:api_builder/data/models/field.dart';
 import 'package:api_builder/presentations/styles/form_style.dart';
 import 'package:flutter/material.dart';
 

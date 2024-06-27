@@ -2,7 +2,7 @@ import 'dart:developer';
 
 import 'package:dio/dio.dart';
 
-import 'package:api_builder/exceptions/form_http_client_error.dart';
+import 'package:api_builder/core/exceptions/form_http_client_error.dart';
 
 class FormHttpClient {
   final Dio dio = Dio();

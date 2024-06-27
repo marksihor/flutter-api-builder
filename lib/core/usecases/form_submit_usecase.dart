@@ -1,10 +1,10 @@
-import 'package:api_builder/injection.dart';
+import 'package:api_builder/core/injection.dart';
 import 'package:dio/dio.dart';
 import 'package:either_dart/either.dart';
 import 'package:api_builder/data/form_http_client.dart';
-import 'package:api_builder/exceptions/form_http_client_error.dart';
-import 'package:api_builder/models/endpoint.dart';
-import 'package:api_builder/models/form.dart';
+import 'package:api_builder/core/exceptions/form_http_client_error.dart';
+import 'package:api_builder/data/models/endpoint.dart';
+import 'package:api_builder/data/models/form.dart';
 
 class FormSubmitUsecase {
   static Future<Either<FormHttpClientError, Response<dynamic>?>> execute(

@@ -1,12 +1,12 @@
 import 'dart:convert';
 import 'dart:developer';
 
-import 'package:api_builder/handlers/api_error_handler.dart';
-import 'package:api_builder/handlers/local_validation_handler.dart';
-import 'package:api_builder/injection.dart';
-import 'package:api_builder/models/field.dart';
-import 'package:api_builder/models/form.dart';
-import 'package:api_builder/usecases/form_submit_usecase.dart';
+import 'package:api_builder/core/handlers/api_error_handler.dart';
+import 'package:api_builder/core/handlers/local_validation_handler.dart';
+import 'package:api_builder/core/injection.dart';
+import 'package:api_builder/data/models/field.dart';
+import 'package:api_builder/data/models/form.dart';
+import 'package:api_builder/core/usecases/form_submit_usecase.dart';
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
 

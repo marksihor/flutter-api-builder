@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:api_builder/models/option.dart';
-import 'package:api_builder/models/rule.dart';
+import 'package:api_builder/data/models/option.dart';
+import 'package:api_builder/data/models/rule.dart';
 import 'package:api_builder/presentations/conditions/condition.dart';
 import 'package:flutter/material.dart';
 

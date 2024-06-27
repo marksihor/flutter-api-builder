@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'package:api_builder/models/field.dart';
+import 'package:api_builder/data/models/field.dart';
 
 import 'package:api_builder/bloc/form_bloc.dart';
 

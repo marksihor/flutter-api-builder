@@ -1,6 +1,6 @@
 import 'package:api_builder/bloc/form_bloc.dart';
 
-import 'package:api_builder/injection.dart';
+import 'package:api_builder/core/injection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 

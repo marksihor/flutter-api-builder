@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:api_builder/models/field.dart';
+import 'package:api_builder/data/models/field.dart';
 import 'field_mixin.dart';
 
 class TextField_ extends StatelessWidget with FieldMixin {

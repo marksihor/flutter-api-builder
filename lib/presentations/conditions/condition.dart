@@ -1,4 +1,4 @@
-import 'package:api_builder/models/form.dart';
+import 'package:api_builder/data/models/form.dart';
 
 abstract class Condition {
   String path;

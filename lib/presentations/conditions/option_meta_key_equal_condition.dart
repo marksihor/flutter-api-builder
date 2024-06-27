@@ -1,4 +1,4 @@
-import 'package:api_builder/models/form.dart';
+import 'package:api_builder/data/models/form.dart';
 import 'package:api_builder/presentations/conditions/condition.dart';
 
 class OptionMetaKeyEqualCondition implements Condition {

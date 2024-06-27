@@ -1,11 +1,10 @@
-import 'package:api_builder/handlers/api_error_handler.dart';
-import 'package:api_builder/handlers/api_validation_handler.dart';
+import 'package:api_builder/core/handlers/api_error_handler.dart';
+import 'package:api_builder/core/handlers/api_pagination_handler.dart';
+import 'package:api_builder/core/handlers/api_validation_handler.dart';
+import 'package:api_builder/data/form_http_client.dart';
 import 'package:api_builder/presentations/components/loading_overlay.dart';
 import 'package:api_builder/presentations/styles/form_style.dart';
 import 'package:get_it/get_it.dart';
-
-import 'data/form_http_client.dart';
-import 'handlers/api_pagination_handler.dart';
 
 class FormInjector {
   // Singleton instance
@@ -52,7 +51,8 @@ class FormInjector {
 
   static GetIt get serviceLocator {
     if (!_instance._isInitialized) {
-      throw Exception("FormInjector is not initialized. Call initialize() first.");
+      throw Exception(
+          "FormInjector is not initialized. Call initialize() first.");
     }
     return _instance._serviceLocator;
   }

@@ -1,7 +1,7 @@
 import 'package:api_builder/bloc/form_bloc.dart';
-import 'package:api_builder/injection.dart';
-import 'package:api_builder/models/field.dart';
-import 'package:api_builder/models/form.dart';
+import 'package:api_builder/core/injection.dart';
+import 'package:api_builder/data/models/field.dart';
+import 'package:api_builder/data/models/form.dart';
 import 'package:api_builder/presentations/components/form_helper_mixin.dart';
 import 'package:api_builder/presentations/styles/form_style.dart';
 import 'package:flutter/material.dart';

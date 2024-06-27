@@ -1,5 +1,5 @@
-import 'package:api_builder/models/field.dart';
-import 'package:api_builder/models/rule.dart';
+import 'package:api_builder/data/models/field.dart';
+import 'package:api_builder/data/models/rule.dart';
 
 class LocalValidationHandler {
   final Field field;
