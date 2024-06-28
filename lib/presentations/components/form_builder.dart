@@ -7,10 +7,10 @@ import 'package:api_builder/presentations/styles/form_style.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class FromBuilder extends StatelessWidget with FormHelperMixin {
+class FormBuilder extends StatelessWidget with FormHelperMixin {
   final Form_ form;
 
-  const FromBuilder({super.key, required this.form});
+  const FormBuilder({super.key, required this.form});
 
   @override
   Widget build(BuildContext context) {
