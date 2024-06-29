@@ -1,6 +1,7 @@
 import 'package:api_builder/core/handlers/api_error_handler.dart';
 import 'package:api_builder/core/handlers/api_pagination_handler.dart';
 import 'package:api_builder/core/handlers/api_validation_handler.dart';
+import 'package:api_builder/core/handlers/local_validation_handler.dart';
 import 'package:api_builder/data/form_http_client.dart';
 import 'package:api_builder/presentations/components/loading_overlay.dart';
 import 'package:api_builder/presentations/styles/form_style.dart';
@@ -28,6 +29,7 @@ class FormInjector {
     required GetIt serviceLocator,
     required String apiUrl,
     required ApiValidationHandler apiValidationHandler,
+    LocalValidationHandler? localValidationHandler,
     required ApiErrorHandler apiErrorHandler,
     required ApiPaginationHandler apiPaginationHandler,
     FormStyle? formStyle,
@@ -42,6 +44,9 @@ class FormInjector {
     serviceLocator.registerLazySingleton(() => apiErrorHandler);
     serviceLocator.registerLazySingleton(() => formStyle ?? FormStyle());
     serviceLocator.registerLazySingleton(() => apiPaginationHandler);
+    serviceLocator.registerLazySingleton(
+      () => localValidationHandler ?? LocalValidationHandler(),
+    );
 
     _isInitialized = true;
   }

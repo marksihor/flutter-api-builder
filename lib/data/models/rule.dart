@@ -1,6 +1,8 @@
-class Rule {
-  dynamic rule;
-  String message;
+enum ValidationRule { required }
 
-  Rule({required this.rule, required this.message});
+class Rule {
+  ValidationRule rule;
+  String? message;
+
+  Rule({required this.rule, this.message});
 }

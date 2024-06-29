@@ -46,6 +46,7 @@ class FormBloc extends Bloc<FormEvent, FormState_> {
       res.fold(
         (error) {
           if (error.code == 422) {
+            log(jsonEncode(error.data));
             emitter(FormValidationErrorState(
               form: event.form
                 ..error = error
@@ -116,7 +117,7 @@ class FormBloc extends Bloc<FormEvent, FormState_> {
 
     void validateField(Field field) {
       if (field.visible) {
-        LocalValidationHandler(field: field).validate();
+        FormInjector.serviceLocator<LocalValidationHandler>().validate(field);
         if (field.errors.isNotEmpty) {
           hasErrors = true;
         }
