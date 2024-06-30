@@ -24,6 +24,7 @@ class FormBuilder extends StatelessWidget with FormHelperMixin {
           return SingleChildScrollView(
             child: Column(
               children: _applyElementsStyles([
+                if (form.label != null) _buildFormLabel(context),
                 ..._getFieldsWidgets(context, state),
                 if (state.form.submitButton != null)
                   _getSubmitButton(context, state),
@@ -31,6 +32,16 @@ class FormBuilder extends StatelessWidget with FormHelperMixin {
             ),
           );
         },
+      ),
+    );
+  }
+
+  Widget _buildFormLabel(BuildContext context) {
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: Text(
+        form.label!,
+        style: Theme.of(context).textTheme.headlineSmall,
       ),
     );
   }

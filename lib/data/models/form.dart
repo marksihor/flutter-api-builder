@@ -18,6 +18,7 @@ class Form_ {
   FormHttpClientError? error;
   Map? _responseData;
   Map<String, dynamic> extraSubmitData = {};
+  String? label;
 
   Form_({
     required this.endpoint,
@@ -27,6 +28,7 @@ class Form_ {
     this.getFieldErrors,
     this.onSubmitError,
     this.onSubmitSuccess,
+    this.label,
     Map<String, dynamic>? extraSubmitData,
   })  : _fields = fields ?? [],
         extraSubmitData = extraSubmitData ?? {};
