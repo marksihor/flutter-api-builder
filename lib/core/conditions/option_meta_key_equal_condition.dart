@@ -6,15 +6,19 @@ class OptionMetaKeyEqualCondition implements Condition {
   String path;
   String key;
   dynamic value;
+  bool opposite;
 
   OptionMetaKeyEqualCondition({
     required this.path,
     required this.key,
     required this.value,
+    this.opposite = false,
   });
 
   @override
   bool check(Form_ form) {
-    return form.getSubmitData()[path]?.metas[key] == value;
+    bool res = form.getSubmitData()[path]?.metas[key] == value;
+    if (opposite) return !res;
+    return res;
   }
 }
