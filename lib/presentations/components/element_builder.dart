@@ -29,9 +29,14 @@ class ElementBuilder extends StatelessWidget with FormHelperMixin {
             submit(context, state);
           }
           if (state is FormSubmittedState) {
-            return builder(
-              state.form.responseData,
-              () => submit(context, state),
+            return RefreshIndicator(
+              onRefresh: () async {
+                submit(context, state);
+              },
+              child: builder(
+                state.form.responseData,
+                () => submit(context, state),
+              ),
             );
           } else if (state is FormSubmittingErrorState &&
               errorBuilder != null) {

@@ -29,7 +29,7 @@ class FormBloc extends Bloc<FormEvent, FormState_> {
     FormSubmitEvent event,
     Emitter<FormState_> emitter,
   ) async {
-    log("Submit data:");
+    log("${event.form.endpoint.method}: ${event.form.endpoint.path}");
     log(json.encode(event.form.getSubmitData()));
     emitter(
       FormSubmittingState(
