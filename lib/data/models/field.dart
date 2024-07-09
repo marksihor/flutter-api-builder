@@ -21,6 +21,8 @@ class Field {
   bool readonly;
   List<String> errors = [];
   List<Rule>? rules;
+  List<String> additionalPaths = [];
+  Map<String, dynamic> additionalValues = {};
 
   Field({
     this.value,
@@ -35,6 +37,8 @@ class Field {
     this.visibilityConditions = const [],
     this.rules,
     this.readonly = false,
+    this.additionalPaths = const [],
+    this.additionalValues = const {},
   })  : _widgetCreator = builder,
         _options = options,
         _subfields = subfields;

@@ -37,7 +37,14 @@ class Form_ {
     Map<String, dynamic> res = {};
 
     void setSubmitData(Field field) {
-      if (field.path != null && field.visible) res[field.path!] = field.value;
+      if (field.path != null && field.visible) {
+        res[field.path!] = field.value;
+        if (field.additionalPaths.isNotEmpty) {
+          for (var additionalPath in field.additionalPaths) {
+            res[additionalPath] = field.additionalValues[additionalPath];
+          }
+        }
+      }
       if (field.subfields.isNotEmpty && field.visible) {
         for (var subfield in field.subfields) {
           setSubmitData(subfield);
