@@ -8,8 +8,13 @@ import 'package:api_builder/bloc/form_bloc.dart';
 mixin FieldMixin on Widget {
   Field get field;
 
-  void setFieldValue(BuildContext context, dynamic value,
-      {Map<String, dynamic>? additionalValues}) {
+  void setFieldValue(
+    BuildContext context,
+    dynamic value, {
+    Map<String, dynamic>? additionalValues,
+  }) {
+    print('setFieldValue (${field.path})');
+    print(value);
     if (field.value != value) {
       field.value = value;
 

@@ -56,7 +56,7 @@ class Form_ {
       setSubmitData(field);
     }
 
-    if (extraSubmitData.isNotEmpty) res.addAll(extraSubmitData);
+    if (extraSubmitData.isNotEmpty) return extraSubmitData..addAll(res);
 
     return res;
   }

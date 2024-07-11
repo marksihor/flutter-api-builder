@@ -7,6 +7,7 @@ import 'package:api_builder/core/injection.dart';
 import 'package:api_builder/data/models/field.dart';
 import 'package:api_builder/data/models/form.dart';
 import 'package:api_builder/core/usecases/form_submit_usecase.dart';
+import 'package:api_builder/data/models/option.dart';
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
 
@@ -103,9 +104,21 @@ class FormBloc extends Bloc<FormEvent, FormState_> {
     FormFieldLoadOptionsEvent event,
     Emitter<FormState_> emitter,
   ) async {
-    event.field.value = null;
     var options = await event.field.getOptions!(event.parentField);
     event.field.setOptions(options);
+    // event.field.value = null;
+    if (event.field.value is Option && !options.contains(event.field.value)) {
+      event.field.value = null;
+    }
+
+    if (event.field.value is List) {
+      for (var e in event.field.value) {
+        if (!options.contains(e)) {
+          event.field.value = null;
+          break;
+        }
+      }
+    }
 
     emitter(
       FormFieldOptionsFetchedState(form: event.form, field: event.field),
