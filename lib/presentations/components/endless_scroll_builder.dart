@@ -6,11 +6,16 @@ import 'package:api_builder/presentations/components/form_helper_mixin.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class EndlessScrollBuilder extends StatefulWidget {
+import '../../core/helpers.dart';
+import 'animated_visibility_widget.dart';
+
+class EndlessScrollBuilder extends StatefulWidget with FormHelperMixin {
+  @override
   final Form_ form;
   final String pageKey;
   final String itemsKey;
   final Widget Function(Map data) elementBuilder;
+  final Widget? openFilterButton;
 
   const EndlessScrollBuilder({
     super.key,
@@ -18,16 +23,17 @@ class EndlessScrollBuilder extends StatefulWidget {
     required this.elementBuilder,
     this.pageKey = 'page',
     this.itemsKey = 'data',
+    this.openFilterButton,
   });
 
   @override
   State<EndlessScrollBuilder> createState() => _EndlessScrollBuilderState();
 }
 
-class _EndlessScrollBuilderState extends State<EndlessScrollBuilder>
-    with FormHelperMixin {
+class _EndlessScrollBuilderState extends State<EndlessScrollBuilder> {
   final ScrollController _scrollController = ScrollController();
-  List elements = [];
+  List _elements = [];
+  bool _bottomSheetVisible = false;
 
   @override
   void initState() {
@@ -43,8 +49,10 @@ class _EndlessScrollBuilderState extends State<EndlessScrollBuilder>
         listener: (BuildContext context, FormState_ state) {
           if (state is FormFieldValueChangedEvent) {
             state.form.extraSubmitData[widget.pageKey] = 1;
+          } else if (state is FormSubmittingState) {
+            _bottomSheetVisible = false;
           }
-          loadingOverlayHandler(state, context);
+          widget.loadingOverlayHandler(state, context);
         },
         builder: (BuildContext context, FormState_ state) {
           if (state is FormInitial) {
@@ -59,32 +67,62 @@ class _EndlessScrollBuilderState extends State<EndlessScrollBuilder>
                 int? nextPage = handler.getNextPage(state.form);
                 if (nextPage != null && nextPage > currentPage) {
                   state.form.extraSubmitData[widget.pageKey] = nextPage;
-                  submit(context, state);
+                  widget.submit(context, state);
                 }
               }
             });
 
-            submit(context, state);
+            widget.submit(context, state);
           }
           if (state is FormSubmittedState) {
             if (state.form.extraSubmitData[widget.pageKey] == 1) {
-              elements = state.form.responseData[widget.itemsKey];
+              _elements = state.form.responseData[widget.itemsKey];
             } else {
-              elements.addAll(state.form.responseData[widget.itemsKey]);
+              _elements.addAll(state.form.responseData[widget.itemsKey]);
             }
           }
 
-          return RefreshIndicator(
-            onRefresh: () async {
-              state.form.extraSubmitData[widget.pageKey] = 1;
-              submit(context, state);
-            },
-            child: ListView(
-              controller: _scrollController,
-              physics: const AlwaysScrollableScrollPhysics(),
-              shrinkWrap: true,
-              children: elements.map((e) => widget.elementBuilder(e)).toList(),
-            ),
+          return Stack(
+            alignment: Alignment.bottomCenter,
+            children: [
+              Scaffold(
+                body: RefreshIndicator(
+                  onRefresh: () async {
+                    state.form.extraSubmitData[widget.pageKey] = 1;
+                    widget.submit(context, state);
+                  },
+                  child: ListView(
+                    controller: _scrollController,
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    shrinkWrap: true,
+                    children:
+                        _elements.map((e) => widget.elementBuilder(e)).toList(),
+                  ),
+                ),
+                floatingActionButton: widget.openFilterButton == null
+                    ? null
+                    : GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            _bottomSheetVisible = !_bottomSheetVisible;
+                          });
+                        },
+                        child:
+                            disableGestureDetection(widget.openFilterButton!),
+                      ),
+              ),
+              AnimatedVisibilityWidget(
+                isVisible: _bottomSheetVisible,
+                child: Card(
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: SingleChildScrollView(
+                      child: widget.buildForm(context, state),
+                    ),
+                  ),
+                ),
+              ),
+            ],
           );
         },
       ),
