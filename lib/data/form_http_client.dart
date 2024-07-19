@@ -40,15 +40,19 @@ class FormHttpClient {
   }
 
   Future<Response<dynamic>?> get(String path, {Object? data}) async {
-    Map<String, dynamic> query = {};
-    if (data is Map) {
-      data.forEach((key, value) {
-        if (value != null) query[key] = value;
-      });
-    }
+    // Map<String, dynamic> query = {};
+    // if (data is Map) {
+    //   data.forEach((key, value) {
+    //     if (value != null) query[key] = value;
+    //   });
+    // }
 
     return await _decorate(
-      dio.get("$apiUrl/$path", queryParameters: query.isEmpty ? null : query),
+      dio.get(
+        "$apiUrl/$path",
+        data: data,
+        // queryParameters: query.isEmpty ? null : query,
+      ),
     );
   }
 

@@ -26,13 +26,20 @@ mixin FormHelperMixin {
     context.read<FormBloc>().add(FormSubmitEvent(form: state.form));
   }
 
-  Widget _buildFormLabel(BuildContext context) {
-    return Align(
-      alignment: Alignment.centerLeft,
-      child: Text(
-        form.label!,
-        style: Theme.of(context).textTheme.headlineSmall,
-      ),
+  void clear(BuildContext context, FormState_ state) {
+    context.read<FormBloc>().add(FormClearEvent(form: state.form));
+  }
+
+  Widget _buildFormLabel(BuildContext context, {Widget? trailing}) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          form.label!,
+          style: Theme.of(context).textTheme.headlineSmall,
+        ),
+        if (trailing != null) trailing,
+      ],
     );
   }
 
@@ -126,19 +133,24 @@ mixin FormHelperMixin {
   }
 
   Widget _getSubmitButton(BuildContext context, FormState_ state) {
-    return GestureDetector(
+    return overrideOnTap(
       onTap: () {
         FocusManager.instance.primaryFocus?.unfocus();
         submit(context, state);
       },
-      child: disableGestureDetection(state.form.submitButton!),
+      child: state.form.submitButton!,
     );
   }
 
-  Widget buildForm(BuildContext context, FormState_ state) {
+  Widget buildForm(
+    BuildContext context,
+    FormState_ state, {
+    Widget? labelTrailing,
+  }) {
     return Column(
       children: _applyElementsStyles([
-        if (form.label != null) _buildFormLabel(context),
+        if (form.label != null)
+          _buildFormLabel(context, trailing: labelTrailing),
         ..._getFieldsWidgets(context, state),
         if (state.form.submitButton != null) _getSubmitButton(context, state),
       ]),

@@ -9,6 +9,12 @@ class FormSubmitEvent extends FormEvent {
   FormSubmitEvent({required this.form});
 }
 
+class FormClearEvent extends FormEvent {
+  final Form_ form;
+
+  FormClearEvent({required this.form});
+}
+
 class FormFieldLoadSubfieldsEvent extends FormEvent {
   final Form_ form;
   final Field field;

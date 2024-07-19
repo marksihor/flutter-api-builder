@@ -101,14 +101,13 @@ class _EndlessScrollBuilderState extends State<EndlessScrollBuilder> {
                 ),
                 floatingActionButton: widget.openFilterButton == null
                     ? null
-                    : GestureDetector(
+                    : overrideOnTap(
                         onTap: () {
                           setState(() {
                             _bottomSheetVisible = !_bottomSheetVisible;
                           });
                         },
-                        child:
-                            disableGestureDetection(widget.openFilterButton!),
+                        child: widget.openFilterButton!,
                       ),
               ),
               AnimatedVisibilityWidget(
@@ -117,7 +116,29 @@ class _EndlessScrollBuilderState extends State<EndlessScrollBuilder> {
                   child: SizedBox(
                     width: double.infinity,
                     child: SingleChildScrollView(
-                      child: widget.buildForm(context, state),
+                      child: widget.buildForm(context, state,
+                          labelTrailing: Row(
+                            children: [
+                              IconButton(
+                                onPressed: () {
+                                  widget.clear(context, state);
+                                  widget.submit(context, state);
+                                  setState(() {
+                                    _bottomSheetVisible = false;
+                                  });
+                                },
+                                icon: const Icon(Icons.delete_outline),
+                              ),
+                              IconButton(
+                                onPressed: () {
+                                  setState(() {
+                                    _bottomSheetVisible = false;
+                                  });
+                                },
+                                icon: const Icon(Icons.clear),
+                              ),
+                            ],
+                          )),
                     ),
                   ),
                 ),

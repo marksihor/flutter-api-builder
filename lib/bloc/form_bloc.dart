@@ -21,6 +21,7 @@ class FormBloc extends Bloc<FormEvent, FormState_> {
   FormBloc({required this.form})
       : super(FormInitial(form: form..setFieldsVisibility())) {
     on<FormSubmitEvent>(_onSubmitEvent);
+    on<FormClearEvent>(_onClearEvent);
     on<FormFieldValueChangedEvent>(_onFieldValueChangedEvent);
     on<FormFieldLoadSubfieldsEvent>(_onFormFieldLoadSubfieldsEvent);
     on<FormFieldLoadOptionsEvent>(_onFormFieldLoadOptionsEvent);
@@ -76,6 +77,14 @@ class FormBloc extends Bloc<FormEvent, FormState_> {
     } else {
       emitter(FormValidationErrorState(form: event.form));
     }
+  }
+
+  _onClearEvent(
+    FormClearEvent event,
+    Emitter<FormState_> emitter,
+  ) {
+    event.form.clearFieldsData();
+    emitter(FormRebuiltState(form: event.form));
   }
 
   _onFieldValueChangedEvent(

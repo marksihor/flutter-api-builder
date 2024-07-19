@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ElementBuilder extends StatelessWidget with FormHelperMixin {
+  @override
   final Form_ form;
   final Widget Function(Map data, Function submit) builder;
   final Widget Function(Map data, Function submit)? errorBuilder;

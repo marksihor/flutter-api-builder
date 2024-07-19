@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:api_builder/core/exceptions/form_http_client_error.dart';
 import 'package:api_builder/core/handlers/api_validation_handler.dart';
 import 'package:api_builder/core/injection.dart';
@@ -15,9 +17,10 @@ class Form_ {
   final List<String> Function(Form_ form, Field field)? getFieldErrors;
   final void Function(Form_ form)? onSubmitError;
   final void Function(Form_ form)? onSubmitSuccess;
+  final Map Function(Map data)? modifySubmitData;
   FormHttpClientError? error;
   Map? _responseData;
-  Map<String, dynamic> extraSubmitData = {};
+  Map extraSubmitData = {};
   String? label;
 
   Form_({
@@ -29,12 +32,26 @@ class Form_ {
     this.onSubmitError,
     this.onSubmitSuccess,
     this.label,
-    Map<String, dynamic>? extraSubmitData,
+    this.modifySubmitData,
+    Map? extraSubmitData,
   })  : _fields = fields ?? [],
         extraSubmitData = extraSubmitData ?? {};
 
-  Map<String, dynamic> getSubmitData() {
-    Map<String, dynamic> res = {};
+  void clearFieldsData() {
+    void clear(Field field) {
+      field.value = null;
+      for (var subfield in field.subfields) {
+        clear(subfield);
+      }
+    }
+
+    for (var field in fields) {
+      clear(field);
+    }
+  }
+
+  Map getSubmitData() {
+    Map res = {};
 
     void setSubmitData(Field field) {
       if (field.path != null && field.visible) {
@@ -56,8 +73,15 @@ class Form_ {
       setSubmitData(field);
     }
 
-    if (extraSubmitData.isNotEmpty) return extraSubmitData..addAll(res);
+    if (extraSubmitData.isNotEmpty) {
+      res = extraSubmitData..addAll(res);
+      log('Extra submit data added.');
+    }
 
+    if (modifySubmitData != null) {
+      res = modifySubmitData!(res);
+      log('Submit data modified.');
+    }
     return res;
   }
 

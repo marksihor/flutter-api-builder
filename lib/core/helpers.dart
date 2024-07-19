@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
 
-Widget disableGestureDetection(Widget widget) {
-  return Stack(
-    children: [
-      widget,
-      Positioned.fill(
-        child: Container(color: Colors.transparent),
-      )
-    ],
+Widget overrideOnTap({required Function onTap, required Widget child}) {
+  return GestureDetector(
+    onTap: () {
+      onTap();
+    },
+    child: Stack(
+      children: [
+        child,
+        Positioned.fill(
+          child: Container(color: Colors.transparent),
+        )
+      ],
+    ),
   );
 }
