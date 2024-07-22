@@ -23,7 +23,11 @@ class _TagsFieldState extends State<TagsField> {
   void initState() {
     if (widget.field.value is List) {
       for (var e in widget.field.value) {
-        selected.add(Option(label: e.toString(), value: e.toString()));
+        if (e is Option) {
+          selected.add(e);
+        } else {
+          selected.add(Option(label: e.toString(), value: e.toString()));
+        }
       }
     }
     super.initState();
