@@ -3,6 +3,7 @@ import 'package:api_builder/core/handlers/api_pagination_handler.dart';
 import 'package:api_builder/core/injection.dart';
 import 'package:api_builder/data/models/form.dart';
 import 'package:api_builder/presentations/components/form_helper_mixin.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -94,7 +95,7 @@ class _EndlessScrollBuilderState extends State<EndlessScrollBuilder> {
                   child: ListView(
                     controller: _scrollController,
                     physics: const AlwaysScrollableScrollPhysics(),
-                    shrinkWrap: true,
+                    shrinkWrap: false,
                     children:
                         _elements.map((e) => widget.elementBuilder(e)).toList(),
                   ),
