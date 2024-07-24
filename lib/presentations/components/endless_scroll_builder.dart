@@ -3,7 +3,6 @@ import 'package:api_builder/core/handlers/api_pagination_handler.dart';
 import 'package:api_builder/core/injection.dart';
 import 'package:api_builder/data/models/form.dart';
 import 'package:api_builder/presentations/components/form_helper_mixin.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -17,6 +16,10 @@ class EndlessScrollBuilder extends StatefulWidget with FormHelperMixin {
   final String itemsKey;
   final Widget Function(Map data) elementBuilder;
   final Widget? openFilterButton;
+  final bool reverse;
+  final List? appends;
+  final List? prepends;
+  final bool refreshable;
 
   const EndlessScrollBuilder({
     super.key,
@@ -25,6 +28,10 @@ class EndlessScrollBuilder extends StatefulWidget with FormHelperMixin {
     this.pageKey = 'page',
     this.itemsKey = 'data',
     this.openFilterButton,
+    this.reverse = false,
+    this.appends,
+    this.prepends,
+    this.refreshable = true,
   });
 
   @override
@@ -83,23 +90,30 @@ class _EndlessScrollBuilderState extends State<EndlessScrollBuilder> {
             }
           }
 
+          var listView = ListView(
+            reverse: widget.reverse,
+            controller: _scrollController,
+            physics: const AlwaysScrollableScrollPhysics(),
+            shrinkWrap: false,
+            children: [
+              ...widget.prepends ?? [],
+              ..._elements,
+              ...widget.appends ?? [],
+            ].map((e) => widget.elementBuilder(e)).toList(),
+          );
           return Stack(
             alignment: Alignment.bottomCenter,
             children: [
               Scaffold(
-                body: RefreshIndicator(
-                  onRefresh: () async {
-                    state.form.extraSubmitData[widget.pageKey] = 1;
-                    widget.submit(context, state);
-                  },
-                  child: ListView(
-                    controller: _scrollController,
-                    physics: const AlwaysScrollableScrollPhysics(),
-                    shrinkWrap: false,
-                    children:
-                        _elements.map((e) => widget.elementBuilder(e)).toList(),
-                  ),
-                ),
+                body: widget.refreshable
+                    ? RefreshIndicator(
+                        onRefresh: () async {
+                          state.form.extraSubmitData[widget.pageKey] = 1;
+                          widget.submit(context, state);
+                        },
+                        child: listView,
+                      )
+                    : listView,
                 floatingActionButton: widget.openFilterButton == null
                     ? null
                     : overrideOnTap(
