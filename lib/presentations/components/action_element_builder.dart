@@ -7,7 +7,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class ActionElementBuilder extends StatelessWidget with FormHelperMixin {
   @override
   final Form_ form;
-  final Widget Function(Function submit) builder;
+  final Widget Function(
+      Function({Map<String, dynamic>? extraSubmitData}) submit) builder;
   final Function successCallback;
 
   const ActionElementBuilder({
@@ -27,7 +28,12 @@ class ActionElementBuilder extends StatelessWidget with FormHelperMixin {
           if (state is FormSubmittedState) successCallback(state.form);
         },
         builder: (BuildContext context, FormState_ state) {
-          return builder(() => submit(context, state));
+          return builder(({Map? extraSubmitData}) {
+            if (extraSubmitData != null) {
+              state.form.extraSubmitData.addAll(extraSubmitData);
+            }
+            submit(context, state);
+          });
         },
       ),
     );
