@@ -4,11 +4,14 @@ import 'package:api_builder/presentations/components/form_helper_mixin.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../core/exceptions/form_http_client_error.dart';
+
 class ElementBuilder extends StatelessWidget with FormHelperMixin {
   @override
   final Form_ form;
   final Widget Function(Map data, Function submit) builder;
-  final Widget Function(Map data, Function submit)? errorBuilder;
+  final Widget Function(FormHttpClientError error, Function submit)?
+      errorBuilder;
 
   const ElementBuilder({
     super.key,
@@ -42,7 +45,7 @@ class ElementBuilder extends StatelessWidget with FormHelperMixin {
           } else if (state is FormSubmittingErrorState &&
               errorBuilder != null) {
             return errorBuilder!(
-              state.form.responseData,
+              state.form.error!,
               () => submit(context, state),
             );
           }

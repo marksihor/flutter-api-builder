@@ -30,9 +30,13 @@ class DateTimeField extends StatelessWidget with FieldMixin {
 
   final TextEditingController controller = TextEditingController();
 
-  Future<void> _selectDateTime(BuildContext context) async {
+  String _getLocale(BuildContext context) {
     Locale deviceLocale = Localizations.localeOf(context);
-    var locale = "${deviceLocale.languageCode}_${deviceLocale.countryCode}";
+    return "${deviceLocale.languageCode}_${deviceLocale.countryCode}";
+  }
+
+  Future<void> _selectDateTime(BuildContext context) async {
+    var locale = _getLocale(context);
 
     DateTime now = DateTime.now();
     await showDatePicker(
@@ -46,8 +50,9 @@ class DateTimeField extends StatelessWidget with FieldMixin {
         if (!dateOnly) {
           TimeOfDay? timeOfDay;
           if (controller.text.isNotEmpty) {
-            var datetime = DateTime.parse(controller.text);
-            timeOfDay = TimeOfDay(hour: datetime.hour, minute: datetime.minute);
+            // print(controller.text);
+            // var datetime = DateTime.parse(controller.text);
+            timeOfDay = TimeOfDay(hour: selectedDate.hour, minute: selectedDate.minute);
           }
           await showTimePicker(
             context: context,
@@ -95,6 +100,11 @@ class DateTimeField extends StatelessWidget with FieldMixin {
 
   @override
   Widget build(BuildContext context) {
+    if (field.value is DateTime) {
+      var locale = _getLocale(context);
+      controller.text = _displayDateTime(field.value, locale);
+      setFieldValue(context, _valueDateTime(field.value, locale));
+    }
     return TextField(
       controller: controller,
       readOnly: true,
